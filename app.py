@@ -30,6 +30,37 @@ def callback():
         abort(400)
     return 'OK'
 
+def date_to_solar(input_str):
+    y = int(input_str[0:4])
+    m = int(input_str[4:6])
+    d = int(input_str[6:8])
+  
+    sday = datetime.date(y, m, d)
+    count = sday - datetime.date(sday.year - 1, 12 ,31) # minus the last day in last yeae
+  
+    return ('%s%03d' % (str(y)[3:4],count.days))
+
+def solar_to_date(input_str):
+    output_num = 2
+    y = int(input_str[0:1])
+    d = int(input_str[1:4])
+    temp = datetime.datetime.now().year
+    year_list = []
+    date_list = []
+    while len(year_list) < output_num:
+        if y == temp%10:
+            year_list.append(temp)
+            temp = temp - 1
+        else:
+            temp = temp - 1
+    for year in year_list:
+        date = datetime.date(year-1,12,31) + datetime.timedelta(days=d)
+        date = date.strftime('%Y-%m-%d')
+        date_list.append(date)
+
+    print_data = date_list[0] + ', ' + date_list[1]
+    return (print_data)
+
 # 處理訊息
 import datetime
 @handler.add(MessageEvent, message=TextMessage)
@@ -60,8 +91,8 @@ def handle_message(event):
         )
     line_bot_api.reply_message(event.reply_token, message)
 
-
 import os
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
+
